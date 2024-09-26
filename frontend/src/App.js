@@ -5,16 +5,39 @@ import Register from './components/Register';
 import Proveedores from './components/Proveedores';
 import AddProveedor from './components/AddProveedor';
 import ViewProveedor from './components/ViewProveedor';
-import AuthWarning from './components/AuthWarning'; // Añade el nuevo componente
+import AuthWarning from './components/AuthWarning'; 
+import { setupAxiosInterceptors } from './axiosConfig';  
+import { jwtDecode } from 'jwt-decode';
+
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+
     if (token) {
-      setAuthToken(token);
+      try {
+        const decodedToken = jwtDecode(token);  // Decodificar el token JWT
+        const currentTime = Date.now() / 1000;   // Obtener tiempo actual en segundos
+
+        if (decodedToken.exp < currentTime) {
+          // Si el token ha expirado, eliminarlo y redirigir al login
+          localStorage.removeItem('token');
+          setAuthToken(null);
+        } else {
+          setAuthToken(token);  // Si no ha expirado, mantener el token
+        }
+      } catch (error) {
+        console.error('Error decoding token', error);
+        localStorage.removeItem('token');
+        setAuthToken(null);
+      }
     }
+
+    // Configurar el interceptor de Axios una vez que el token se valide
+    setupAxiosInterceptors();
+
   }, []);
 
   // Manejar el cierre de sesión
@@ -45,7 +68,7 @@ function App() {
             authToken ? (
               <Proveedores authToken={authToken} handleLogout={handleLogout} />
             ) : (
-              <AuthWarning />
+              <Navigate to="/login" />
             )
           }
         />
@@ -57,7 +80,7 @@ function App() {
             authToken ? (
               <AddProveedor authToken={authToken} />
             ) : (
-              <AuthWarning />
+              <Navigate to="/login" />
             )
           }
         />
@@ -69,7 +92,7 @@ function App() {
             authToken ? (
               <ViewProveedor authToken={authToken} />
             ) : (
-              <AuthWarning />
+              <Navigate to="/login" />
             )
           }
         />
