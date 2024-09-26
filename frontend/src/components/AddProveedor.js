@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario } from '../utils/proveedorUtils';
 
 const AddProveedor = () => {
   const [proveedor, setProveedor] = useState({
@@ -9,25 +10,21 @@ const AddProveedor = () => {
     cedula: '',
     tipo_proveedor: '',
     tipo_persona: '',
-    beneficiarios: '',
-    datos_bancarios: '',
+    beneficiarios: [{ nombre: '', cedula: '' }],
+    datos_bancarios: { banco: '', cuenta: '', tipo_cuenta: 'Ahorros' },
   });
   const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    setProveedor({
-      ...proveedor,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post('/proveedores', proveedor);
-      alert('Proveedor añadido exitosamente');
+      setMessage('Proveedor añadido exitosamente');
+      setError('')
     } catch (error) {
       setError('Error al añadir el proveedor');
+      setMessage('')
     }
   };
 
@@ -35,16 +32,74 @@ const AddProveedor = () => {
     <div>
       <h1>Añadir Proveedor</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="nit" placeholder="NIT" value={proveedor.nit} onChange={handleChange} />
-        <input type="text" name="nombre" placeholder="Nombre" value={proveedor.nombre} onChange={handleChange} />
-        <input type="text" name="apellido" placeholder="Apellido" value={proveedor.apellido} onChange={handleChange} />
-        <input type="text" name="cedula" placeholder="Cédula" value={proveedor.cedula} onChange={handleChange} />
-        <input type="text" name="tipo_proveedor" placeholder="Tipo de Proveedor" value={proveedor.tipo_proveedor} onChange={handleChange} />
-        <input type="text" name="tipo_persona" placeholder="Tipo de Persona" value={proveedor.tipo_persona} onChange={handleChange} />
-        <textarea name="beneficiarios" placeholder="Beneficiarios" value={proveedor.beneficiarios} onChange={handleChange}></textarea>
-        <textarea name="datos_bancarios" placeholder="Datos Bancarios" value={proveedor.datos_bancarios} onChange={handleChange}></textarea>
+      <label>NIT: </label>
+              <input type="text" name="nit" placeholder="NIT" value={proveedor.nit} onChange={(e) => handleChange(e, setProveedor)} />
+              <label>Nombre: </label>
+              <input type="text" name="nombre" value={proveedor.nombre} onChange={(e) => handleChange(e, setProveedor)} />
+              <label>Apellido: </label>
+              <input type="text" name="apellido" value={proveedor.apellido} onChange={(e) => handleChange(e, setProveedor)} />
+              <label>Cedula: </label>
+              <input type="text" name="cedula" placeholder="Cédula" value={proveedor.cedula} onChange={(e) => handleChange(e, setProveedor)} />
+
+              {/* Tipo de Proveedor (Lista de opciones) */}
+              <label>Tipo de Proveedor:</label>
+              <select name="tipo_proveedor" value={proveedor.tipo_proveedor} onChange={(e) => handleChange(e, setProveedor)}>
+                <option value="Nacional">Nacional</option>
+                <option value="Internacional">Internacional</option>
+              </select>
+
+              {/* Tipo de Persona (Lista de opciones) */}
+              <label>Tipo de Persona:</label>
+              <select name="tipo_persona" value={proveedor.tipo_persona} onChange={(e) => handleChange(e, setProveedor)}>
+                <option value="Natural">Natural</option>
+                <option value="Jurídica">Jurídica</option>
+              </select>
+              
+              {/* Beneficiarios (Lista de objetos) */}
+              <h3>Beneficiarios</h3>
+                {proveedor.beneficiarios && proveedor.beneficiarios.map((beneficiario, index) => (
+                    <div key={index}>
+                    <label>Nombre Beneficiario: </label>
+                    <input
+                        type="text"
+                        value={beneficiario.nombre}
+                        onChange={(e) => handleBeneficiarioChange(index, 'nombre', e.target.value, proveedor.beneficiarios, setProveedor)}
+                    />
+                    <label>Cédula Beneficiario: </label>
+                    <input
+                        type="text"
+                        value={beneficiario.cedula}
+                        onChange={(e) => handleBeneficiarioChange(index, 'cedula', e.target.value, proveedor.beneficiarios, setProveedor)}
+                    />
+                    </div>
+                    
+                ))}
+                <button type="button" onClick={() => handleAddBeneficiario(setProveedor, proveedor)}>Añadir Beneficiario</button>
+
+              {/* Datos Bancarios (Objeto JSON) */}
+              <h3>Datos Bancarios</h3>
+                {proveedor.datos_bancarios && (
+                    <div>
+                    <label>Banco: </label>
+                    <input
+                        type="text"
+                        value={proveedor.datos_bancarios.banco}
+                        onChange={(e) => handleDatosBancariosChange('banco', e.target.value, setProveedor)}
+                    />
+                    <label>Número de Cuenta: </label>
+                    <input
+                        type="text"
+                        value={proveedor.datos_bancarios.cuenta}
+                        onChange={(e) => handleDatosBancariosChange('cuenta', e.target.value, setProveedor)}
+                    />
+                    <label>Tipo de Cuenta: </label>
+                    <select name="tipo_cuenta" value={proveedor.datos_bancarios.tipo_cuenta} onChange={(e) => handleDatosBancariosChange('tipo_cuenta', e.target.value, setProveedor)}>
+                      <option value="Ahorros">Ahorros</option>
+                      <option value="Corriente">Corriente</option>
+                    </select>
+                    </div>
+                )}
         <button type="submit">Añadir Proveedor</button>
-        {error && <p>{error}</p>}
       </form>
     </div>
   );

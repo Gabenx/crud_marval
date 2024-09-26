@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario } from '../utils/proveedorUtils';
 
 const ViewProveedor = () => {
   const [proveedorId, setProveedorId] = useState('');
@@ -36,30 +37,6 @@ const ViewProveedor = () => {
       setError('Error al actualizar el proveedor');
     }
   };
-
-  const handleChange = (e) => {
-    setProveedor({
-      ...proveedor,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Para actualizar los beneficiarios:
-  const handleBeneficiarioChange = (index, field, value) => {
-    const updatedBeneficiarios = [...proveedor.beneficiarios];
-    updatedBeneficiarios[index][field] = value;
-    setProveedor({ ...proveedor, beneficiarios: updatedBeneficiarios });
-  };
-  
-  // Para actualizar los datos bancarios:
-  const handleDatosBancariosChange = (field, value) => {
-    setProveedor({
-      ...proveedor,
-      datos_bancarios: { ...proveedor.datos_bancarios, [field]: value },
-    });
-  };
-  
-
   return (
     <div>
       <h1>Ver, Modificar o Eliminar Proveedor</h1>
@@ -72,24 +49,24 @@ const ViewProveedor = () => {
           {isEditing ? (
             <div>
               <label>NIT: </label>
-              <input type="text" name="nit" placeholder="NIT" value={proveedor.nit} onChange={handleChange} />
+              <input type="text" name="nit" placeholder="NIT" value={proveedor.nit} onChange={(e) => handleChange(e, setProveedor)} />
               <label>Nombre: </label>
-              <input type="text" name="nombre" value={proveedor.nombre} onChange={handleChange} />
+              <input type="text" name="nombre" value={proveedor.nombre} onChange={(e) => handleChange(e, setProveedor)} />
               <label>Apellido: </label>
-              <input type="text" name="apellido" value={proveedor.apellido} onChange={handleChange} />
+              <input type="text" name="apellido" value={proveedor.apellido} onChange={(e) => handleChange(e, setProveedor)} />
               <label>Cedula: </label>
-              <input type="text" name="cedula" placeholder="Cédula" value={proveedor.cedula} onChange={handleChange} />
-              <label>Tipo de Proveedor: </label>
+              <input type="text" name="cedula" placeholder="Cédula" value={proveedor.cedula} onChange={(e) => handleChange(e, setProveedor)} />
+
               {/* Tipo de Proveedor (Lista de opciones) */}
               <label>Tipo de Proveedor:</label>
-              <select name="tipo_proveedor" value={proveedor.tipo_proveedor} onChange={handleChange}>
+              <select name="tipo_proveedor" value={proveedor.tipo_proveedor} onChange={(e) => handleChange(e, setProveedor)}>
                 <option value="Nacional">Nacional</option>
                 <option value="Internacional">Internacional</option>
               </select>
 
               {/* Tipo de Persona (Lista de opciones) */}
               <label>Tipo de Persona:</label>
-              <select name="tipo_persona" value={proveedor.tipo_persona} onChange={handleChange}>
+              <select name="tipo_persona" value={proveedor.tipo_persona} onChange={(e) => handleChange(e, setProveedor)}>
                 <option value="Natural">Natural</option>
                 <option value="Jurídica">Jurídica</option>
               </select>
@@ -102,16 +79,17 @@ const ViewProveedor = () => {
                     <input
                         type="text"
                         value={beneficiario.nombre}
-                        onChange={(e) => handleBeneficiarioChange(index, 'nombre', e.target.value)}
+                        onChange={(e) => handleBeneficiarioChange(index, 'nombre', e.target.value, proveedor.beneficiarios, setProveedor)}
                     />
                     <label>Cédula Beneficiario: </label>
                     <input
                         type="text"
                         value={beneficiario.cedula}
-                        onChange={(e) => handleBeneficiarioChange(index, 'cedula', e.target.value)}
+                        onChange={(e) => handleBeneficiarioChange(index, 'cedula', e.target.value, proveedor.beneficiarios, setProveedor)}
                     />
                     </div>
                 ))}
+                <button type="button" onClick={() => handleAddBeneficiario(setProveedor, proveedor)}>Añadir Beneficiario</button>
 
               {/* Datos Bancarios (Objeto JSON) */}
               <h3>Datos Bancarios</h3>
@@ -121,16 +99,16 @@ const ViewProveedor = () => {
                     <input
                         type="text"
                         value={proveedor.datos_bancarios.banco}
-                        onChange={(e) => handleDatosBancariosChange('banco', e.target.value)}
+                        onChange={(e) => handleDatosBancariosChange('banco', e.target.value, setProveedor)}
                     />
                     <label>Número de Cuenta: </label>
                     <input
                         type="text"
                         value={proveedor.datos_bancarios.cuenta}
-                        onChange={(e) => handleDatosBancariosChange('cuenta', e.target.value)}
+                        onChange={(e) => handleDatosBancariosChange('cuenta', e.target.value, setProveedor)}
                     />
                     <label>Tipo de Cuenta: </label>
-                    <select name="tipo_cuenta" value={proveedor.datos_bancarios.tipo_cuenta} onChange={(e) => handleDatosBancariosChange('tipo_cuenta', e.target.value)}>
+                    <select name="tipo_cuenta" value={proveedor.datos_bancarios.tipo_cuenta} onChange={(e) => handleDatosBancariosChange('tipo_cuenta', e.target.value, setProveedor)}>
                       <option value="Ahorros">Ahorros</option>
                       <option value="Corriente">Corriente</option>
                     </select>
