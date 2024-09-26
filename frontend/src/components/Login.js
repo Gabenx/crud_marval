@@ -8,7 +8,7 @@ const Login = ({ setAuthToken }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();  // Declara navigate
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -22,7 +22,7 @@ const Login = ({ setAuthToken }) => {
       setAuthToken(token);
       localStorage.setItem('token', token);
       setError('');
-      
+
       // Redirige a /proveedores después del inicio de sesión exitoso
       navigate('/proveedores');
 

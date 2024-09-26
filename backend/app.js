@@ -3,9 +3,9 @@ const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-
 const app = express();
 app.use(express.json());
+const { validarNumeros, validarLetras, validarProveedor, validarPersona, validarCuenta } = require('./utils/validations');
 
 // Configura la conexión a PostgreSQL
 const pool = new Pool({
@@ -21,15 +21,32 @@ const pool = new Pool({
 // Crear un nuevo proveedor
 app.post('/proveedor', async (req, res) => {
     const { nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, beneficiarios, datos_bancarios } = req.body;
+
+    if (!(validarNumeros(nit) || validarLetras(nit) || validarLetras(apellido) || validarNumeros(cedula) || validarProveedor(tipo_proveedor) || validarPersona(tipo_persona)
+        || validarCuenta(datos_bancarios.tipo_cuenta) || validarLetras(datos_bancarios.banco) || validarNumeros(datos_bancarios.cuenta))) {
+        return res.status(400); // Se recibió un valor inesperado
+    }
+
+    beneficiarios.forEach(element => {
+        if (!(validarLetras(element.nombre) || validarNumeros(element.cedula))){
+            return res.status(400); //Se recibió un valor inesperado
+        }
+    });
+
+    console.log(beneficiarios)
+    // Verifica que los campos de datos bancarios no estén vacíos
+    if (!datos_bancarios.banco || !datos_bancarios.cuenta || !datos_bancarios.tipo_cuenta) {
+        return false;
+    }
     try {
         const result = await pool.query(
             'INSERT INTO proveedores (nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, beneficiarios, datos_bancarios) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
             [nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, JSON.stringify(beneficiarios), JSON.stringify(datos_bancarios)]
         );
-        res.status(201).json(result.rows[0]);
+        return res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error("Error al crear el proveedor: ", error)
-        res.status(500).json({ error: 'Error al crear proveedor' });
+        return res.status(500).json({ error: 'Error al crear proveedor' });
     }
 });
 
@@ -38,10 +55,10 @@ app.get('/proveedor/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query('SELECT * FROM proveedores WHERE id = $1', [id]);
-        res.status(200).json(result.rows[0]);
+        return res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error("Error al obtener el proveedor: ", error)
-        res.status(500).json({ error: 'Error al obtener proveedor' });
+        return res.status(500).json({ error: 'Error al obtener proveedor' });
     }
 });
 
@@ -52,7 +69,7 @@ app.get('/proveedores', async (req, res) => {
         res.json(result.rows);
     } catch (error) {
         console.error("Error al obtener proveedores:", error);
-        res.status(500).json({ error: 'Error al obtener proveedores' });
+        return res.status(500).json({ error: 'Error al obtener proveedores' });
     }
 });
 
@@ -65,10 +82,10 @@ app.put('/proveedor/:id', async (req, res) => {
             'UPDATE proveedores SET nit = $1, nombre = $2, apellido = $3, cedula = $4, tipo_proveedor = $5, tipo_persona = $6, beneficiarios = $7, datos_bancarios = $8 WHERE id = $9 RETURNING *',
             [nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, JSON.stringify(beneficiarios), JSON.stringify(datos_bancarios), id]
         );
-        res.status(200).json(result.rows[0]);
+        return res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error("Error al actualizar el proveedor: ", error)
-        res.status(500).json({ error: 'Error al actualizar proveedor' });
+        return res.status(500).json({ error: 'Error al actualizar proveedor' });
     }
 });
 
@@ -88,16 +105,16 @@ app.put('/proveedor/:id/validar', esAdmin, async (req, res) => {
             'UPDATE proveedores SET estado = $1 WHERE id = $2 RETURNING *',
             [estado, id]
         );
-        
+
         // Si no se encontró el proveedor
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Proveedor no encontrado' });
         }
 
-        res.json({message: `El proveedor ha sido ${estado.toLowerCase()} satisfactoriamente`});  // Devolver el mensaje
+        res.json({ message: `El proveedor ha sido ${estado.toLowerCase()} satisfactoriamente` });  // Devolver el mensaje
     } catch (error) {
         console.error("Error al validar o rechazar proveedor:", error);
-        res.status(500).json({ error: 'Error al validar o rechazar proveedor' });
+        return res.status(500).json({ error: 'Error al validar o rechazar proveedor' });
     }
 });
 
@@ -108,10 +125,10 @@ app.delete('/proveedor/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM proveedores WHERE id = $1', [id]);
-        res.status(204).send();
+        return res.status(204).send();
     } catch (error) {
         console.error("Error al eliminar proveedor: ", error)
-        res.status(500).json({ error: 'Error al eliminar proveedor' });
+        return res.status(500).json({ error: 'Error al eliminar proveedor' });
     }
 });
 
@@ -142,10 +159,10 @@ app.post('/signup', async (req, res) => {
             [username, hashedPassword, rol]
         );
 
-        res.status(201).json({ message: 'Usuario creado exitosamente', user: result.rows[0] });
+        return res.status(201).json({ message: 'Usuario creado exitosamente', user: result.rows[0] });
     } catch (error) {
         console.error('Error al crear usuario:', error);
-        res.status(500).json({ error: 'Error al crear usuario' });
+        return res.status(500).json({ error: 'Error al crear usuario' });
     }
 });
 
@@ -171,12 +188,12 @@ app.post('/login', async (req, res) => {
             const token = jwt.sign({ username: user.username, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
             res.json({ token });
         } else {
-            res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
         }
 
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        res.status(500).json({ error: 'Error al iniciar sesión' });
+        return res.status(500).json({ error: 'Error al iniciar sesión' });
     }
 });
 
@@ -198,7 +215,7 @@ function esAdmin(req, res, next) {
             return res.status(403).json({ error: 'Acceso denegado: no tienes permisos de administrador' });
         }
     } catch (error) {
-        res.status(401).json({ error: 'Token inválido' });
+        return res.status(401).json({ error: 'Token inválido' });
     }
 }
 
@@ -215,7 +232,7 @@ app.get('/external-api', async (req, res) => {
         });
         const jwtToken = tokenResponse.data.accessToken;
         console.log(tokenResponse.data);
-        
+
         const apiResponse = await axios.get('https://analyticsdev.app.marval.com.co/api/jwtjde/getAllProyectos', {
             headers: { Authorization: `Bearer ${jwtToken}` }
         });
@@ -223,7 +240,7 @@ app.get('/external-api', async (req, res) => {
         res.json(apiResponse.data);
     } catch (error) {
         console.error("Error al consumir API externa: ", error)
-        res.status(500).json({ error: 'Error al consumir API externa' });
+        return res.status(500).json({ error: 'Error al consumir API externa' });
     }
 });
 

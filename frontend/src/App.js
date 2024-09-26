@@ -5,8 +5,8 @@ import Register from './components/Register';
 import Proveedores from './components/Proveedores';
 import AddProveedor from './components/AddProveedor';
 import ViewProveedor from './components/ViewProveedor';
-import AuthWarning from './components/AuthWarning'; 
-import { setupAxiosInterceptors } from './axiosConfig';  
+import AuthWarning from './components/AuthWarning';
+import { setupAxiosInterceptors } from './axiosConfig';
 import { jwtDecode } from 'jwt-decode';
 
 
@@ -68,7 +68,7 @@ function App() {
             authToken ? (
               <Proveedores authToken={authToken} handleLogout={handleLogout} />
             ) : (
-              <Navigate to="/login" />
+              <AuthWarning />
             )
           }
         />
@@ -80,7 +80,7 @@ function App() {
             authToken ? (
               <AddProveedor authToken={authToken} />
             ) : (
-              <Navigate to="/login" />
+              <AuthWarning />
             )
           }
         />
@@ -92,7 +92,7 @@ function App() {
             authToken ? (
               <ViewProveedor authToken={authToken} />
             ) : (
-              <Navigate to="/login" />
+              <AuthWarning />
             )
           }
         />
