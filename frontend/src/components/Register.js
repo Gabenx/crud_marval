@@ -2,39 +2,43 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate
 
-
-const Login = ({ setAuthToken }) => {
+const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();  // Declara navigate
-  
-  const handleLogin = async (e) => {
+  const [success, setSuccess] = useState('');
+
+  const navigate = useNavigate();  // Creamos una instancia del hook useNavigate
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/login', {
+      // Usamos el endpoint /signup para el registro
+      const response = await axios.post('/signup', {
         username,
         password,
+        rol: 'user'  // El rol siempre será 'user' para este formulario
       });
 
-      const token = response.data.token;
-      setAuthToken(token);
-      localStorage.setItem('token', token);
+      setSuccess('Usuario registrado exitosamente');
       setError('');
-      
-      // Redirige a /proveedores después del inicio de sesión exitoso
-      navigate('/proveedores');
+
+      // Redirigimos a la página de login después de 2 segundos
+      setTimeout(() => {
+        navigate('/login');  // Redirige a la página de login
+      }, 2000);
 
     } catch (error) {
-      setError('Credenciales incorrectas');
+      setError('Error al registrar usuario');
+      setSuccess('');
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+      <h2>Registro</h2>
+      <form onSubmit={handleRegister}>
         <div>
           <label>Usuario:</label>
           <input
@@ -52,11 +56,11 @@ const Login = ({ setAuthToken }) => {
           />
         </div>
         {error && <p>{error}</p>}
-        <button type="submit">Iniciar sesión</button>
+        {success && <p>{success}</p>}
+        <button type="submit">Registrarse</button>
       </form>
-      <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p> {/* Agregamos enlace a registro */}
     </div>
   );
 };
 
-export default Login;
+export default Register;
