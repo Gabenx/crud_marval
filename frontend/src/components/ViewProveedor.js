@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario } from '../utils/proveedorUtils';
+import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos } from '../utils/proveedorUtils';
 
 const ViewProveedor = () => {
   const [proveedorId, setProveedorId] = useState('');
@@ -29,6 +29,12 @@ const ViewProveedor = () => {
   };
 
   const handleUpdateProveedor = async () => {
+
+    if (!validarCampos(proveedor)) {
+      alert("Todos los campos deben ser completados");
+      return; // Detiene la ejecución si hay campos vacíos
+    }
+
     try {
       await axios.put(`/proveedor/${proveedorId}`, proveedor);
       alert('Proveedor actualizado exitosamente');

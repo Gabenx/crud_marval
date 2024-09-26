@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario } from '../utils/proveedorUtils';
+import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos } from '../utils/proveedorUtils';
 
 const AddProveedor = () => {
   const [proveedor, setProveedor] = useState({
@@ -17,6 +17,12 @@ const AddProveedor = () => {
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
+
+    // Verifica si todos los campos requeridos están llenos
+    if (!validarCampos(proveedor)) {
+      alert("Todos los campos deben ser completados");
+      return; // Detiene la ejecución si hay campos vacíos
+    }
     e.preventDefault();
     try {
       await axios.post('/proveedores', proveedor);

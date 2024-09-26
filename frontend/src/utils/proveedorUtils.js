@@ -1,13 +1,13 @@
 // Función para validar los nombres (solo letras)
 export const validarNombre = (value) => {
     const regex = /^[A-Za-zÀ-ÿ\s]*$/;
-    return regex.test(value); // Retorna true si es válido
+    return regex.test(value); 
   };
   
 // Función para validar las cédulas (solo números)
 export const validarCedula = (value) => {
     const regex = /^[0-9]*$/;
-    return regex.test(value); // Retorna true si es válido
+    return regex.test(value); 
   };
 
 
@@ -75,3 +75,28 @@ export const handleAddBeneficiario = (setProveedor, proveedor) => {
     });
   };
 
+// Función de validación para campos vacíos
+export const validarCampos = (proveedor) => {
+  // Verifica los campos que no deben estar vacíos
+  const { nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, datos_bancarios } = proveedor;
+
+  if (!nit || !nombre || !apellido || !cedula || !tipo_proveedor || !tipo_persona) {
+    return false; 
+  }
+
+  // Verifica que los campos de datos bancarios no estén vacíos
+  if (!datos_bancarios.banco || !datos_bancarios.cuenta || !datos_bancarios.tipo_cuenta) {
+    return false; 
+  }
+
+  // Verifica que los beneficiarios no estén vacíos 
+  if (proveedor.beneficiarios && proveedor.beneficiarios.length > 0) {
+    for (let beneficiario of proveedor.beneficiarios) {
+      if (!beneficiario.nombre || !beneficiario.cedula) {
+        return false; 
+      }
+    }
+  }
+
+  return true; 
+};
