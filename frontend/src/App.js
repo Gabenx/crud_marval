@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Proveedores from './components/Proveedores';
+import AddProveedor from './components/AddProveedor';
+import ViewProveedor from './components/ViewProveedor';
+import AuthWarning from './components/AuthWarning'; // Añade el nuevo componente
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
@@ -14,7 +17,7 @@ function App() {
     }
   }, []);
 
-  // Función para cerrar sesión
+  // Manejar el cierre de sesión
   const handleLogout = () => {
     localStorage.removeItem('token');
     setAuthToken(null);
@@ -22,40 +25,61 @@ function App() {
 
   return (
     <Router>
-      <div>
-        {/* Definimos las rutas para el login, registro y proveedores */}
-        <Routes>
-          {/* Ruta de inicio de sesión */}
-          <Route
-            path="/login"
-            element={<Login setAuthToken={setAuthToken} />}
-          />
-          
-          {/* Ruta de registro */}
-          <Route
-            path="/register"
-            element={<Register />}
-          />
+      <Routes>
+        {/* Ruta de login */}
+        <Route
+          path="/login"
+          element={<Login setAuthToken={setAuthToken} />}
+        />
 
-          {/* Ruta de CRUD de proveedores, requiere autenticación */}
-          <Route
-            path="/proveedores"
-            element={
-              authToken ? (
-                <Proveedores authToken={authToken} handleLogout={handleLogout} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+        {/* Ruta de registro */}
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-          {/* Redirección por defecto a /login si no hay otra ruta */}
-          <Route
-            path="*"
-            element={<Navigate to="/login" />}
-          />
-        </Routes>
-      </div>
+        {/* Ruta protegida: CRUD de proveedores */}
+        <Route
+          path="/proveedores"
+          element={
+            authToken ? (
+              <Proveedores authToken={authToken} handleLogout={handleLogout} />
+            ) : (
+              <AuthWarning />
+            )
+          }
+        />
+
+        {/* Ruta protegida: Añadir proveedor */}
+        <Route
+          path="/add-proveedor"
+          element={
+            authToken ? (
+              <AddProveedor authToken={authToken} />
+            ) : (
+              <AuthWarning />
+            )
+          }
+        />
+
+        {/* Ruta protegida: Ver, Modificar o Eliminar proveedor */}
+        <Route
+          path="/view-proveedor"
+          element={
+            authToken ? (
+              <ViewProveedor authToken={authToken} />
+            ) : (
+              <AuthWarning />
+            )
+          }
+        />
+
+        {/* Ruta predeterminada */}
+        <Route
+          path="*"
+          element={<Navigate to={authToken ? '/proveedores' : '/login'} />}
+        />
+      </Routes>
     </Router>
   );
 }
