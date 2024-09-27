@@ -49,11 +49,6 @@ function App() {
 
   return (
     <Router>
-      {authToken && (
-          <button onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-        )}
       <Routes>
         {/* Ruta de login */}
         <Route

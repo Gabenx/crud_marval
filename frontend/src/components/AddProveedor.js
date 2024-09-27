@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { Container, TextField, Button, Typography, Paper, Grid, Select, MenuItem, InputLabel, FormControl, Box } from '@mui/material';
 import axios from 'axios';
 import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos, handleDeleteBeneficiario } from '../utils/proveedorUtils';
 
-const AddProveedor = () => {
+const AddProveedor = ({ handleLogout }) => {
   const [proveedor, setProveedor] = useState({
     nit: '',
     nombre: '',
@@ -17,7 +18,6 @@ const AddProveedor = () => {
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
-
     // Verifica si todos los campos requeridos están llenos
     if (!validarCampos(proveedor)) {
       alert("Todos los campos deben ser completados");
@@ -27,90 +27,207 @@ const AddProveedor = () => {
     try {
       await axios.post('/proveedor', proveedor);
       setMessage('Proveedor añadido exitosamente');
-      setError('')
+      setError('');
     } catch (error) {
       setError('Error al añadir el proveedor');
-      setMessage('')
+      setMessage('');
     }
   };
 
   return (
-    <div>
-      <h1>Añadir Proveedor</h1>
-      <form onSubmit={handleSubmit}>
-        <label>NIT: </label>
-        <input type="text" name="nit" placeholder="NIT" value={proveedor.nit} onChange={(e) => handleChange(e, setProveedor)} />
-        <label>Nombre: </label>
-        <input type="text" name="nombre" value={proveedor.nombre} onChange={(e) => handleChange(e, setProveedor)} />
-        <label>Apellido: </label>
-        <input type="text" name="apellido" value={proveedor.apellido} onChange={(e) => handleChange(e, setProveedor)} />
-        <label>Cedula: </label>
-        <input type="text" name="cedula" placeholder="Cédula" value={proveedor.cedula} onChange={(e) => handleChange(e, setProveedor)} />
+    <Container maxWidth="md" sx={{ marginTop: '40px' }}>
+      <Paper elevation={3} sx={{ padding: '20px' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h4" gutterBottom>
+            Añadir Proveedor
+          </Typography>
+          <Button variant="outlined" color="error" onClick={handleLogout}>
+            Cerrar Sesión
+          </Button>
+        </Box>
 
-        {/* Tipo de Proveedor (Lista de opciones) */}
-        <label>Tipo de Proveedor:</label>
-        <select name="tipo_proveedor" value={proveedor.tipo_proveedor} onChange={(e) => handleChange(e, setProveedor)}>
-          <option value="Nacional">Nacional</option>
-          <option value="Internacional">Internacional</option>
-        </select>
-
-        {/* Tipo de Persona (Lista de opciones) */}
-        <label>Tipo de Persona:</label>
-        <select name="tipo_persona" value={proveedor.tipo_persona} onChange={(e) => handleChange(e, setProveedor)}>
-          <option value="Natural">Natural</option>
-          <option value="Jurídica">Jurídica</option>
-        </select>
-
-        {/* Beneficiarios (Lista de objetos) */}
-        <h3>Beneficiarios</h3>
-        {proveedor.beneficiarios && proveedor.beneficiarios.map((beneficiario, index) => (
-          <div key={index}>
-            <label>Nombre Beneficiario: </label>
-            <input
-              type="text"
-              value={beneficiario.nombre}
-              onChange={(e) => handleBeneficiarioChange(index, 'nombre', e.target.value, proveedor.beneficiarios, setProveedor)}
-            />
-            <label>Cédula Beneficiario: </label>
-            <input
-              type="text"
-              value={beneficiario.cedula}
-              onChange={(e) => handleBeneficiarioChange(index, 'cedula', e.target.value, proveedor.beneficiarios, setProveedor)}
-            />
-            {proveedor.beneficiarios.length > 1 && (
-              <button type="button" onClick={() => handleDeleteBeneficiario(setProveedor, proveedor, index)}>Eliminar Beneficiario</button>
-            )}
-          </div>
-
-        ))}
-        <button type="button" onClick={() => handleAddBeneficiario(setProveedor, proveedor)}>Añadir Beneficiario</button>
-
-        {/* Datos Bancarios (Objeto JSON) */}
-        <h3>Datos Bancarios</h3>
-        {proveedor.datos_bancarios && (
-          <div>
-            <label>Banco: </label>
-            <input
-              type="text"
-              value={proveedor.datos_bancarios.banco}
-              onChange={(e) => handleDatosBancariosChange('banco', e.target.value, setProveedor)}
-            />
-            <label>Número de Cuenta: </label>
-            <input
-              type="text"
-              value={proveedor.datos_bancarios.cuenta}
-              onChange={(e) => handleDatosBancariosChange('cuenta', e.target.value, setProveedor)}
-            />
-            <label>Tipo de Cuenta: </label>
-            <select name="tipo_cuenta" value={proveedor.datos_bancarios.tipo_cuenta} onChange={(e) => handleDatosBancariosChange('tipo_cuenta', e.target.value, setProveedor)}>
-              <option value="Ahorros">Ahorros</option>
-              <option value="Corriente">Corriente</option>
-            </select>
-          </div>
+        {error && (
+          <Typography color="error" sx={{ marginBottom: '20px' }}>
+            {error}
+          </Typography>
         )}
-        <button type="submit">Añadir Proveedor</button>
-      </form>
-    </div>
+        {message && (
+          <Typography color="primary" sx={{ marginBottom: '20px' }}>
+            {message}
+          </Typography>
+        )}
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="NIT"
+                name="nit"
+                value={proveedor.nit}
+                onChange={(e) => handleChange(e, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Nombre"
+                name="nombre"
+                value={proveedor.nombre}
+                onChange={(e) => handleChange(e, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Apellido"
+                name="apellido"
+                value={proveedor.apellido}
+                onChange={(e) => handleChange(e, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Cédula"
+                name="cedula"
+                value={proveedor.cedula}
+                onChange={(e) => handleChange(e, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+
+            {/* Tipo de Proveedor */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required>
+                <InputLabel>Tipo de Proveedor</InputLabel>
+                <Select
+                  name="tipo_proveedor"
+                  value={proveedor.tipo_proveedor}
+                  onChange={(e) => handleChange(e, setProveedor)}
+                >
+                  <MenuItem value="Nacional">Nacional</MenuItem>
+                  <MenuItem value="Internacional">Internacional</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Tipo de Persona */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required>
+                <InputLabel>Tipo de Persona</InputLabel>
+                <Select
+                  name="tipo_persona"
+                  value={proveedor.tipo_persona}
+                  onChange={(e) => handleChange(e, setProveedor)}
+                >
+                  <MenuItem value="Natural">Natural</MenuItem>
+                  <MenuItem value="Jurídica">Jurídica</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Beneficiarios */}
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Beneficiarios
+              </Typography>
+            </Grid>
+            {proveedor.beneficiarios.map((beneficiario, index) => (
+              <Grid container spacing={2} key={index} sx={{ marginBottom: '10px', ml:0.4 }}>
+                <Grid item xs={12} sm={5}>
+                  <TextField
+                    label={`Nombre Beneficiario ${index + 1}`}
+                    value={beneficiario.nombre}
+                    onChange={(e) => handleBeneficiarioChange(index, 'nombre', e.target.value, proveedor.beneficiarios, setProveedor)}
+                    fullWidth
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                  <TextField
+                    label={`Cédula Beneficiario ${index + 1}`}
+                    value={beneficiario.cedula}
+                    onChange={(e) => handleBeneficiarioChange(index, 'cedula', e.target.value, proveedor.beneficiarios, setProveedor)}
+                    fullWidth
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  {proveedor.beneficiarios.length > 1 && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDeleteBeneficiario(setProveedor, proveedor, index)}
+                      fullWidth
+                    >
+                      Eliminar
+                    </Button>
+                  )}
+                </Grid>
+              </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleAddBeneficiario(setProveedor, proveedor)}
+                size="small"
+              >
+                Añadir Beneficiario
+              </Button>
+            </Grid>
+
+            {/* Datos Bancarios */}
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Datos Bancarios
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Banco"
+                value={proveedor.datos_bancarios.banco}
+                onChange={(e) => handleDatosBancariosChange('banco', e.target.value, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Número de Cuenta"
+                value={proveedor.datos_bancarios.cuenta}
+                onChange={(e) => handleDatosBancariosChange('cuenta', e.target.value, setProveedor)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth required>
+                <InputLabel>Tipo de Cuenta</InputLabel>
+                <Select
+                  name="tipo_cuenta"
+                  value={proveedor.datos_bancarios.tipo_cuenta}
+                  onChange={(e) => handleDatosBancariosChange('tipo_cuenta', e.target.value, setProveedor)}
+                >
+                  <MenuItem value="Ahorros">Ahorros</MenuItem>
+                  <MenuItem value="Corriente">Corriente</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Botón para añadir proveedor */}
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Añadir Proveedor
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 
