@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos, handleDeleteBeneficiario } from '../utils/proveedorUtils';
+import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos, handleDeleteBeneficiario, handleNITChange } from '../utils/proveedorUtils';
 import { Container, Paper, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ const ViewProveedor = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -24,6 +25,10 @@ const ViewProveedor = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    console.log(proveedor)
+  }, [proveedor]);
 
   const handleFetchProveedor = async () => {
     try {
@@ -88,6 +93,11 @@ const ViewProveedor = () => {
               value={proveedorId}
               onChange={(e) => setProveedorId(e.target.value)}
               fullWidth
+              slotProps={{
+                input: {
+                  readOnly: isEditing,
+                },
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -109,6 +119,7 @@ const ViewProveedor = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="NIT"
+                    name = "nit"
                     value={proveedor.nit}
                     onChange={(e) => handleChange(e, setProveedor)}
                     fullWidth
@@ -117,6 +128,7 @@ const ViewProveedor = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Nombre"
+                    name = "nombre"
                     value={proveedor.nombre}
                     onChange={(e) => handleChange(e, setProveedor)}
                     fullWidth
@@ -125,6 +137,7 @@ const ViewProveedor = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Apellido"
+                    name = "apellido"
                     value={proveedor.apellido}
                     onChange={(e) => handleChange(e, setProveedor)}
                     fullWidth
@@ -133,6 +146,7 @@ const ViewProveedor = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="Cédula"
+                    name = "cedula"
                     value={proveedor.cedula}
                     onChange={(e) => handleChange(e, setProveedor)}
                     fullWidth
@@ -143,6 +157,7 @@ const ViewProveedor = () => {
                     <InputLabel>Tipo de Proveedor</InputLabel>
                     <Select
                       value={proveedor.tipo_proveedor}
+                      name = "tipo_proveedor"
                       onChange={(e) => handleChange(e, setProveedor)}
                     >
                       <MenuItem value="Nacional">Nacional</MenuItem>
@@ -155,6 +170,7 @@ const ViewProveedor = () => {
                     <InputLabel>Tipo de Persona</InputLabel>
                     <Select
                       value={proveedor.tipo_persona}
+                      name = "tipo_persona"
                       onChange={(e) => handleChange(e, setProveedor)}
                     >
                       <MenuItem value="Natural">Natural</MenuItem>

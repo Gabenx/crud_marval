@@ -16,8 +16,6 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-// Rutas y lógica del CRUD aquí...
-
 // Crear un nuevo proveedor
 app.post('/proveedor', async (req, res) => {
     const { nit, nombre, apellido, cedula, tipo_proveedor, tipo_persona, beneficiarios, datos_bancarios } = req.body;
@@ -218,8 +216,6 @@ function esAdmin(req, res, next) {
         return res.status(401).json({ error: 'Token inválido' });
     }
 }
-
-
 
 //Consumir API Externa
 const axios = require('axios');

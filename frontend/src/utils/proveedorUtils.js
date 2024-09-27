@@ -10,11 +10,10 @@ export const validarNumeros = (value) => {
   return regex.test(value);
 };
 
-
 // Maneja los cambios generales en el proveedor
 export const handleChange = (e, setProveedor) => {
   const { name, value } = e.target;
-
+  console.log(e)
   if ((name === 'nombre' || name === 'apellido') && !validarLetras(value)) {
     return; // Evitar caracteres no deseados en nombre o apellido
   }
