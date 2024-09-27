@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Paper, Grid, Select, MenuItem, InputLabel, FormControl, Box } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Paper, Grid, Select, MenuItem, InputLabel, FormControl, Box } from '@mui/material';
 import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos, handleDeleteBeneficiario } from '../utils/proveedorUtils';
+
 
 const AddProveedor = ({ handleLogout }) => {
   const [proveedor, setProveedor] = useState({
@@ -16,6 +18,7 @@ const AddProveedor = ({ handleLogout }) => {
   });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     // Verifica si todos los campos requeridos están llenos
@@ -28,6 +31,8 @@ const AddProveedor = ({ handleLogout }) => {
       await axios.post('/proveedor', proveedor);
       setMessage('Proveedor añadido exitosamente');
       setError('');
+      // Redirigir a /proveedores después de añadir el proveedor exitosamente
+      navigate('/proveedores');
     } catch (error) {
       setError('Error al añadir el proveedor');
       setMessage('');

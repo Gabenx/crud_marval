@@ -45,6 +45,7 @@ const Proveedores = ({ authToken, handleLogout }) => {
           <Table>
             <TableHead>
               <TableRow>
+              <TableCell>ID</TableCell>
                 <TableCell>NIT</TableCell>
                 <TableCell>Nombre</TableCell>
                 <TableCell>Apellido</TableCell>
@@ -57,6 +58,7 @@ const Proveedores = ({ authToken, handleLogout }) => {
             <TableBody>
               {proveedores.map((proveedor) => (
                 <TableRow key={proveedor.nit}>
+                  <TableCell>{proveedor.id}</TableCell>
                   <TableCell>{proveedor.nit}</TableCell>
                   <TableCell>{proveedor.nombre}</TableCell>
                   <TableCell>{proveedor.apellido}</TableCell>
@@ -69,19 +71,10 @@ const Proveedores = ({ authToken, handleLogout }) => {
                       color="primary"
                       sx={{ marginRight: 1 }}
                       onClick={() => {
-                        window.location.href = `/view-proveedor?id=${proveedor.nit}`;
+                        window.location.href = `/view-proveedor?id=${proveedor.id}`;
                       }}
                     >
                       Ver/Modificar
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => {
-                        // Función para eliminar proveedor
-                      }}
-                    >
-                      Eliminar
                     </Button>
                   </TableCell>
                 </TableRow>
