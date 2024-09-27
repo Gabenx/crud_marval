@@ -44,10 +44,16 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setAuthToken(null);
+    window.location.href = "/login";
   };
 
   return (
     <Router>
+      {authToken && (
+          <button onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        )}
       <Routes>
         {/* Ruta de login */}
         <Route
