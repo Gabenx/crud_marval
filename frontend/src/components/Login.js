@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate
-import { TextField, Button, Container, Typography, Box, Paper, Grid } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Paper } from '@mui/material';
 
 const Login = ({ setAuthToken }) => {
   const [username, setUsername] = useState('');

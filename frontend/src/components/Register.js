@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Container, Typography, Box, Paper, Grid } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Box, Paper } from '@mui/material';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
-  const navigate = useNavigate();  // Creamos una instancia del hook useNavigate
 
   const handleRegister = async (e) => {
     e.preventDefault();
