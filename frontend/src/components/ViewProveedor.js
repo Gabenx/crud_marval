@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { handleBeneficiarioChange, handleChange, handleDatosBancariosChange, handleAddBeneficiario, validarCampos, handleDeleteBeneficiario } from '../utils/proveedorUtils';
 
 const ViewProveedor = () => {
@@ -7,6 +8,17 @@ const ViewProveedor = () => {
   const [proveedor, setProveedor] = useState(null);
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      if (decodedToken.rol === 'admin') {
+        setIsAdmin(true);  // El usuario es admin
+      }
+    }
+  }, []);
 
   const handleFetchProveedor = async () => {
     try {
@@ -16,6 +28,23 @@ const ViewProveedor = () => {
     } catch (error) {
       setError('Error al obtener el proveedor');
     }
+  };
+
+  // Función para aprobar o rechazar al proveedor
+  const handleValidarProveedor = (estado, id) => {
+    console.log(id)
+    axios.put(`/proveedor/${id}/validar`, {'estado': estado }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      }
+    })
+    .then(response => {
+      console.log('Proveedor validado', response.data);
+      setProveedor(prevState => ({ ...prevState, estado }));  // Actualizar el estado del proveedor
+    })
+    .catch(error => {
+      console.error('Error al validar proveedor', error);
+    });
   };
 
   const handleDeleteProveedor = async () => {
@@ -42,6 +71,9 @@ const ViewProveedor = () => {
     } catch (error) {
       setError('Error al actualizar el proveedor');
     }
+
+    
+
   };
   return (
     <div>
@@ -150,8 +182,20 @@ const ViewProveedor = () => {
               <p><strong>Banco:</strong> {proveedor.datos_bancarios.banco}</p>
               <p><strong>Cuenta:</strong> {proveedor.datos_bancarios.cuenta}</p>
               <p><strong>Tipo de Cuenta:</strong> {proveedor.datos_bancarios.tipo_cuenta}</p>
-
+              
               <p><strong>Estado:</strong> {proveedor.estado}</p>
+              {/* Mostrar los botones solo si el usuario es admin */}
+              {isAdmin && (
+                <div>
+                  <button onClick={() => handleValidarProveedor('Aprobado', proveedorId)}>
+                    Aprobar
+                  </button>
+                  <button onClick={() => handleValidarProveedor('Rechazado', proveedorId)}>
+                    Rechazar
+                  </button>
+                </div>
+              )}
+              
               <button onClick={() => setIsEditing(true)}>Modificar</button>
               <button onClick={handleDeleteProveedor}>Eliminar</button>
             </div>
