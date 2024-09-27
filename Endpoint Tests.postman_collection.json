@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "e5d98ac7-622d-4fb0-aa97-2a6972842a35",
+		"name": "Endpoint Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "15405055"
+	},
+	"item": [
+		{
+			"name": "Create Proveedor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nit\": \"123456789\",\r\n    \"nombre\": \"Juan\",\r\n    \"apellido\": \"Pérez\",\r\n    \"cedula\": \"987654321\",\r\n    \"tipo_proveedor\": \"Nacional\",\r\n    \"tipo_persona\": \"Natural\",\r\n    \"beneficiarios\": [\r\n        {\r\n            \"nombre\": \"Beneficiario 1\",\r\n            \"cedula\": \"12345\"\r\n        }\r\n    ],\r\n    \"datos_bancarios\": {\r\n        \"banco\": \"Banco1\",\r\n        \"cuenta\": \"987654321\",\r\n        \"tipo_cuenta\": \"Ahorros\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/proveedor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"proveedor"
+					],
+					"query": [
+						{
+							"key": "1",
+							"value": "204",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get proveedor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/proveedor/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"proveedor",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify proveedor",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nit\": \"987654321\",\r\n    \"nombre\": \"María\",\r\n    \"apellido\": \"López\",\r\n    \"cedula\": \"123456789\",\r\n    \"tipo_proveedor\": \"Internacional\",\r\n    \"tipo_persona\": \"Jurídica\",\r\n    \"beneficiarios\": [\r\n        {\r\n            \"nombre\": \"Beneficiario 2\",\r\n            \"cedula\": \"54321\"\r\n        }\r\n    ],\r\n    \"datos_bancarios\": {\r\n        \"banco\": \"Banco2\",\r\n        \"cuenta\": \"123456789\",\r\n        \"tipo_cuenta\": \"Corriente\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/proveedor/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"proveedor",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete proveedor",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/proveedor/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"proveedor",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Proyectos Externos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:3000/external-api"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user\",\r\n    \"password\": \"contraseña_usuario\",\r\n    \"rol\": \"user\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "Login usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin1\",\r\n    \"password\": \"adminpass123\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Validate proveedor",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3MjczMTYxNDIsImV4cCI6MTcyNzMxOTc0Mn0.Kk-6-_XzAx31Pg9Mxb0gHQkmIuGCZjmlmYNepPwUX7w"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/proveedor/:id/validar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"proveedor",
+						":id",
+						"validar"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
