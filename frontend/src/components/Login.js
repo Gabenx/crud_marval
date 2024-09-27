@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';  // Importamos el hook useNavigate
-
+import { TextField, Button, Container, Typography, Box, Paper, Grid } from '@mui/material';
 
 const Login = ({ setAuthToken }) => {
   const [username, setUsername] = useState('');
@@ -32,30 +32,58 @@ const Login = ({ setAuthToken }) => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Usuario:</label>
-          <input
-            type="text"
+    <Container maxWidth="xs">
+      <Paper elevation={3} sx={{ padding: '20px', marginTop: '50px' }}>
+        <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
+          <Typography variant="h4" gutterBottom>
+            Iniciar sesión
+          </Typography>
+        </Box>
+
+        <form onSubmit={handleLogin}>
+          <TextField
+            label="Usuario"
+            variant="outlined"
+            fullWidth
+            margin="normal"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div>
-          <label>Contraseña:</label>
-          <input
+
+          <TextField
+            label="Contraseña"
+            variant="outlined"
             type="password"
+            fullWidth
+            margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-        {error && <p>{error}</p>}
-        <button type="submit">Iniciar sesión</button>
-      </form>
-      <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p> {/* Agregamos enlace a registro */}
-    </div>
+
+          {error && (
+            <Typography color="error" sx={{ marginBottom: '20px' }}>
+              {error}
+            </Typography>
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: '20px' }}
+          >
+            Iniciar sesión
+          </Button>
+        </form>
+
+        <Box sx={{ marginTop: '20px', textAlign: 'center' }}>
+          <Typography variant="body2">
+            ¿No tienes una cuenta? <a href="/register">Regístrate aquí</a>
+          </Typography>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
